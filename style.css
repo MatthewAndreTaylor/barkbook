@@ -1,0 +1,143 @@
+
+
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  background: #f0f0f0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 128px;
+  background: #ffffff;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+
+  gap: 8px;
+  padding: 12px 16px;
+
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+header h1 {
+  margin: 0;
+  text-align: center;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+header > div {
+  position: static;
+  gap: 4px;
+  right: 16px;
+}
+
+#cardContainer {
+  position: relative;
+  width: min(95vw, 1000px);
+  aspect-ratio: 3 / 4;
+  max-height: calc(90vh - 56px);
+  display: flex;
+  margin-top: 25vh;
+}
+
+.card {
+  position: absolute;
+  background: #f7f8fa;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  pointer-events: none;
+  backface-visibility: hidden;
+  will-change: transform;
+  transition: transform 0.4s, opacity 0.4s ease;
+}
+
+.card-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.card-title {
+  margin-top: 10px;
+  word-break: break-word;
+  font-size: 2.5em;
+}
+
+.card-image {
+  width: 90%;
+  max-height: 70%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.card:not(:last-child) {
+  top: 5px;
+}
+
+
+.switch {
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  width: 3.5em;
+  height: 2em;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #d7ebff;
+  border-radius: 50px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2em;
+  width: 2em;
+  background-color: white;
+  border-radius: 50px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.4);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  background-image: url("manual.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 1.1em 1.1em;
+}
+
+.switch input:checked + .slider {
+  background: #0974f1;
+}
+.switch input:checked + .slider:before {
+  transform: translateX(1.6em);
+  background-image: url("timer.svg");
+}
