@@ -26,7 +26,6 @@ loadCards().then(() => {
     const cardData = cards[i];
     const card = document.createElement("div");
     card.className = "card";
-
     const content = document.createElement("div");
     content.className = "card-content";
 
@@ -138,10 +137,8 @@ function autoSwipe() {
   if (!container.lastElementChild) return;
 
   currentCard = container.lastElementChild;
-  const dx = AUTO_DISTANCE;
-  const dt = 150;
   currentCard.style.transition = "none";
-  handleSwipe(dx, dt);
+  handleSwipe(AUTO_DISTANCE, 150);
 }
 
 const toggleBtn = document.getElementById("autoToggle");
