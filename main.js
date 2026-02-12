@@ -129,7 +129,7 @@ container.addEventListener("touchend", (e) => endDrag(e.changedTouches[0].client
 
 let autoEnabled = false;
 let autoTimer = null;
-const AUTO_INTERVAL = 6000;
+const AUTO_INTERVAL = 8000;
 const AUTO_DISTANCE = 70;
 
 function autoSwipe() {
