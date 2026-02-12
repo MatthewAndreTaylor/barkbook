@@ -1,6 +1,8 @@
 const container = document.getElementById("cardContainer");
+const mockContainer = document.getElementById("mockContainer");
 let isDragging = false;
 let startX = 0;
+let startY = 0;
 let startTime = 0;
 let currentCard = null;
 let cards = [];
@@ -46,19 +48,21 @@ loadCards().then(() => {
   }
 });
 
-function startDrag(x) {
+function startDrag(x, y) {
   currentCard = container.lastElementChild;
   isDragging = true;
   startX = x;
+  startY = y;
   startTime = performance.now();
   currentCard.style.transition = "none";
 }
 
-function moveDrag(x) {
+function moveDrag(x, y) {
   if (!isDragging) return;
 
   const dx = x - startX;
-  currentCard.style.transform = `translateX(${dx}px) rotate(${dx / 10}deg)`;
+  const dy = y - startY;
+  currentCard.style.transform = `translateX(${dx}px) translateY(${dy}px) rotate(${dx / 20}deg)`;
 }
 
 function endDrag(x) {
@@ -88,19 +92,16 @@ async function handleSwipe(dx, dt) {
 
   const rect = card.getBoundingClientRect();
   const clone = card.cloneNode(true);
-  clone.style.position = "fixed";
-  clone.style.left = rect.left + "px";
-  clone.style.top = rect.top + "px";
   clone.style.width = rect.width + "px";
   clone.style.height = rect.height + "px";
   clone.style.transition = "transform .4s ease-out";
-  document.body.appendChild(clone);
+  mockContainer.appendChild(clone);
 
   // Force layout
   clone.getBoundingClientRect();
 
   requestAnimationFrame(() => {
-    clone.style.transform = `translateX(${dir * flyOutDistance}px) rotate(${dir * 45}deg)`;
+    clone.style.transform = `translateX(${dir * flyOutDistance}px) rotate(${dir * 25}deg)`;
   });
 
   clone.addEventListener("transitionend", () => {
@@ -119,12 +120,12 @@ async function handleSwipe(dx, dt) {
   card_image.alt = newCardData.name;
 }
 
-container.addEventListener("mousedown", (e) => startDrag(e.clientX));
-window.addEventListener("mousemove", (e) => moveDrag(e.clientX));
+container.addEventListener("mousedown", (e) => startDrag(e.clientX, e.clientY));
+window.addEventListener("mousemove", (e) => moveDrag(e.clientX, e.clientY));
 window.addEventListener("mouseup", (e) => endDrag(e.clientX));
 
-container.addEventListener("touchstart", (e) => startDrag(e.touches[0].clientX));
-container.addEventListener("touchmove", (e) => moveDrag(e.touches[0].clientX));
+container.addEventListener("touchstart", (e) => startDrag(e.touches[0].clientX, e.touches[0].clientY));
+container.addEventListener("touchmove", (e) => moveDrag(e.touches[0].clientX, e.touches[0].clientY));
 container.addEventListener("touchend", (e) => endDrag(e.changedTouches[0].clientX));
 
 let autoEnabled = false;
@@ -138,7 +139,7 @@ function autoSwipe() {
 
   currentCard = container.lastElementChild;
   currentCard.style.transition = "none";
-  handleSwipe(AUTO_DISTANCE, 150);
+  handleSwipe(AUTO_DISTANCE, 200);
 }
 
 const toggleBtn = document.getElementById("autoToggle");
