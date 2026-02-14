@@ -6,6 +6,7 @@ let startY = 0;
 let startTime = 0;
 let currentCard = null;
 let cards = [];
+let dy = 0;
 
 async function fetchCardData() {
   const res = await fetch("https://dog.ceo/api/breeds/image/random");
@@ -61,7 +62,7 @@ function moveDrag(x, y) {
   if (!isDragging) return;
 
   const dx = x - startX;
-  const dy = y - startY;
+  dy = y - startY;
   currentCard.style.transform = `translateX(${dx}px) translateY(${dy}px) rotate(${dx / 20}deg)`;
 }
 
@@ -101,7 +102,7 @@ async function handleSwipe(dx, dt) {
   clone.getBoundingClientRect();
 
   requestAnimationFrame(() => {
-    clone.style.transform = `translateX(${dir * flyOutDistance}px) rotate(${dir * 25}deg)`;
+    clone.style.transform = `translateX(${dir * flyOutDistance}px) translateY(${dy}px) rotate(${dir * 25}deg)`;
   });
 
   clone.addEventListener("transitionend", () => {
