@@ -15,7 +15,7 @@ header {
   top: 0;
   left: 0;
   right: 0;
-  height: 128px;
+  height: 70px;
   background: #ffffff;
   display: grid;
   grid-template-columns: auto 1fr auto;
@@ -30,7 +30,7 @@ header {
   width: min(95vw, 1000px);
   aspect-ratio: 3 / 4;
   max-height: calc(90vh - 56px);
-  margin-top: 150px;
+  margin-top: 120px;
 }
 
 #cardContainer {
