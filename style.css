@@ -10,6 +10,12 @@ body {
   font-family: Arial, sans-serif;
 }
 
+body.dragging,
+body.dragging * {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 header {
   position: fixed;
   top: 0;
@@ -54,6 +60,7 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+  -webkit-user-select: none;
   user-select: none;
   pointer-events: none;
   backface-visibility: hidden;

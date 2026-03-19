@@ -8,6 +8,10 @@ let currentCard = null;
 let cards = [];
 let dy = 0;
 
+function setDragSelectionLock(locked) {
+  document.body.classList.toggle("dragging", locked);
+}
+
 async function fetchCardData() {
   const res = await fetch("https://dog.ceo/api/breeds/image/random");
   const data = await res.json();
@@ -56,6 +60,7 @@ function startDrag(x, y) {
   startY = y;
   startTime = performance.now();
   currentCard.style.transition = "none";
+  setDragSelectionLock(true);
 }
 
 function moveDrag(x, y) {
@@ -72,6 +77,7 @@ function endDrag(x) {
   const dx = x - startX;
   const dt = performance.now() - startTime;
   isDragging = false;
+  setDragSelectionLock(false);
   handleSwipe(dx, dt);
 }
 
