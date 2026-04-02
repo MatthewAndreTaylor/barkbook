@@ -1,16 +1,12 @@
 const container = document.getElementById("cardContainer");
 const mockContainer = document.getElementById("mockContainer");
+let nextCardData = []; // Try to keep at least 3 cards pre-fetched for smooth experience
 let isDragging = false;
 let startX = 0;
 let startY = 0;
 let startTime = 0;
 let currentCard = null;
-let cards = [];
 let dy = 0;
-
-function setDragSelectionLock(locked) {
-  document.body.classList.toggle("dragging", locked);
-}
 
 async function fetchCardData() {
   const res = await fetch("https://dog.ceo/api/breeds/image/random");
@@ -20,47 +16,51 @@ async function fetchCardData() {
   return { name: breed, image: data.message };
 }
 
-async function loadCards() {
-  const initialCards = 2;
-  for (let i = 0; i < initialCards; i++) {
-    const cardData = await fetchCardData();
-    cards.push(cardData);
-  }
+function createCard(cardData) {
+  const card = document.createElement("div");
+  card.className = "card";
+  const content = document.createElement("div");
+  content.className = "card-content";
+  const title = document.createElement("div");
+  title.className = "card-title";
+  title.textContent = cardData.name;
+
+  const img = document.createElement("img");
+  img.className = "card-image";
+  img.crossOrigin = "anonymous";
+  img.src = cardData.image;
+  img.alt = cardData.name;
+  content.appendChild(img);
+  content.appendChild(title);
+  card.appendChild(content);
+  container.appendChild(card);
 }
 
-loadCards().then(() => {
-  for (let i = 0; i < cards.length; i++) {
-    const cardData = cards[i];
-    const card = document.createElement("div");
-    card.className = "card";
-    const content = document.createElement("div");
-    content.className = "card-content";
+async function loadCards() {
+  const cards = [await fetchCardData(), await fetchCardData()];
+  cards.forEach((data) => createCard(data));
 
-    const title = document.createElement("div");
-    title.className = "card-title";
-    title.textContent = cardData.name;
+  nextCardData.push(await fetchCardData());
+  fetchCardData().then((data) => {nextCardData.push(data);});
+  fetchCardData().then((data) => {nextCardData.push(data);});
+}
 
-    const img = document.createElement("img");
-    img.className = "card-image";
-    img.loading = "lazy";
-    img.crossOrigin = "anonymous";
-    img.src = cardData.image;
-    img.alt = cardData.name;
-    content.appendChild(img);
-    content.appendChild(title);
-    card.appendChild(content);
-    container.appendChild(card);
-  }
-});
+loadCards();
 
 function startDrag(x, y) {
+  // Prefetch more if running low
+  if (nextCardData.length <= 5) {
+    fetchCardData().then((data) => {nextCardData.push(data);});
+    fetchCardData().then((data) => {nextCardData.push(data);});
+  }
+
   currentCard = container.lastElementChild;
   isDragging = true;
   startX = x;
   startY = y;
   startTime = performance.now();
   currentCard.style.transition = "none";
-  setDragSelectionLock(true);
+  document.body.classList.toggle("dragging", true);
 }
 
 function moveDrag(x, y) {
@@ -77,7 +77,7 @@ function endDrag(x) {
   const dx = x - startX;
   const dt = performance.now() - startTime;
   isDragging = false;
-  setDragSelectionLock(false);
+  document.body.classList.toggle("dragging", false);
   handleSwipe(dx, dt);
 }
 
@@ -93,8 +93,8 @@ async function handleSwipe(dx, dt) {
     return;
   }
 
-  const dir = dx > 0 ? 1 : -1;
   const card = currentCard;
+  const dir = dx > 0 ? 1 : -1;
   const flyOutDistance = window.innerWidth * 1.1;
 
   const rect = card.getBoundingClientRect();
@@ -115,16 +115,21 @@ async function handleSwipe(dx, dt) {
     clone.remove();
   });
 
-  // Recycle the card immediately
   card.style.transform = "";
-  container.insertBefore(card, container.firstChild);
 
-  // Swap card data
-  const newCardData = await fetchCardData();
-  card.querySelector(".card-title").textContent = newCardData.name;
-  const card_image = card.querySelector(".card-image");
-  card_image.src = newCardData.image;
-  card_image.alt = newCardData.name;
+  // Swap cached data before moving card
+  let nextData = nextCardData.shift();
+  if (!nextData) {
+    console.warn("No data ready");
+    nextData = await fetchCardData();
+  }
+  card.querySelector(".card-title").textContent = nextData.name;
+  const cardImage = card.querySelector(".card-image");
+  cardImage.src = nextData.image;
+  cardImage.alt = nextData.name;
+
+  // Recycle the card immediately
+  container.insertBefore(card, container.firstChild);
 }
 
 container.addEventListener("mousedown", (e) => startDrag(e.clientX, e.clientY));
